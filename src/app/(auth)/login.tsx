@@ -13,7 +13,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -132,7 +131,7 @@ export default function LoginScreen() {
               <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
             </Pressable>
 
-            <Button title="Criar conta" />
+            <Button title="Entrar" onPress={() => router.push("/documents")} />
           </View>
 
           <View style={styles.footer}>
@@ -176,12 +175,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
 
-  logoText: {
-    color: "#FFFFFF",
-    fontSize: 34,
-    fontWeight: "800",
-  },
-
   form: {
     width: "100%",
   },
@@ -197,45 +190,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
-  input: {
-    height: 54,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 14,
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 16,
-    color: "#0F172A",
-    fontSize: 15,
-  },
-
-  passwordContainer: {
-    height: 54,
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 14,
-    backgroundColor: "#FFFFFF",
-  },
-
-  passwordInput: {
-    flex: 1,
-    height: "100%",
-    paddingHorizontal: 16,
-    color: "#0F172A",
-    fontSize: 15,
-  },
-
-  showButton: {
-    paddingHorizontal: 14,
-  },
-
-  showButtonText: {
-    color: "#2563EB",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-
   forgotPassword: {
     alignSelf: "flex-end",
     marginTop: -4,
@@ -243,31 +197,9 @@ const styles = StyleSheet.create({
   },
 
   forgotPasswordText: {
-    color: "#2563EB",
+    color: colors.primary,
     fontSize: 14,
     fontWeight: "600",
-  },
-
-  loginButton: {
-    height: 54,
-    borderRadius: 14,
-    backgroundColor: "#2563EB",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  loginButtonPressed: {
-    opacity: 0.85,
-  },
-
-  loginButtonDisabled: {
-    opacity: 0.6,
-  },
-
-  loginButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
   },
 
   footer: {
@@ -283,7 +215,7 @@ const styles = StyleSheet.create({
   },
 
   registerText: {
-    color: "#2563EB",
+    color: colors.primary,
     fontSize: 14,
     fontWeight: "700",
   },
