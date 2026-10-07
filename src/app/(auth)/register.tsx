@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -12,6 +12,10 @@ import {
 } from "react-native";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Input } from "@/components/ui/Input";
+import { Ionicons } from "@expo/vector-icons";
+import { colors } from "@/constants/colors";
+import { Button } from "@/components/ui/button";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -89,10 +93,9 @@ export default function Register() {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Nome completo</Text>
 
-              <TextInput
-                style={styles.input}
+              <Input
                 placeholder="Digite seu nome completo"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.placeholder}
                 value={name}
                 onChangeText={setName}
                 autoCapitalize="words"
@@ -104,10 +107,9 @@ export default function Register() {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>E-mail</Text>
 
-              <TextInput
-                style={styles.input}
+              <Input
                 placeholder="Digite seu e-mail"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.placeholder}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -120,47 +122,36 @@ export default function Register() {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Senha</Text>
 
-              <View style={styles.passwordContainer}>
-                <TextInput
-                  style={styles.passwordInput}
-                  placeholder="Digite sua senha"
-                  placeholderTextColor="#9CA3AF"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  editable={!loading}
-                />
-
-                <Pressable
-                  onPress={() => setShowPassword((previous) => !previous)}
-                  style={styles.showButton}
-                >
-                  <Text style={styles.showButtonText}>
-                    {showPassword ? "Ocultar" : "Mostrar"}
-                  </Text>
-                </Pressable>
-              </View>
-
+              <Input
+                placeholder="Digite sua senha"
+                placeholderTextColor={colors.placeholder}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                editable={!loading}
+                rightIcon={
+                  <Ionicons
+                    name={showPassword ? "eye-off" : "eye"}
+                    size={22}
+                    color={colors.icon}
+                  />
+                }
+                onRightIconPress={() =>
+                  setShowPassword((previous) => !previous)
+                }
+              />
               <Text style={styles.passwordHint}>
                 A senha deve possuir pelo menos 6 caracteres.
               </Text>
             </View>
 
-            <Pressable
-              style={({ pressed }) => [
-                styles.registerButton,
-                pressed && styles.registerButtonPressed,
-                loading && styles.registerButtonDisabled,
-              ]}
-              onPress={handleRegister}
+            <Button
+              title="Criar conta"
               disabled={loading}
-            >
-              <Text style={styles.registerButtonText}>
-                {loading ? "Criando conta..." : "Criar conta"}
-              </Text>
-            </Pressable>
+              loading={loading}
+              onPress={() => router.push("/documents")}
+            />
           </View>
 
           <View style={styles.footer}>
@@ -200,21 +191,6 @@ const styles = StyleSheet.create({
     marginBottom: 36,
   },
 
-  logo: {
-    width: 72,
-    height: 72,
-    borderRadius: 20,
-    backgroundColor: "#2563EB",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
-  },
-
-  logoText: {
-    color: "#FFFFFF",
-    fontSize: 34,
-    fontWeight: "800",
-  },
 
   title: {
     color: "#0F172A",
@@ -246,72 +222,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
-  input: {
-    height: 54,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 14,
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 16,
-    color: "#0F172A",
-    fontSize: 15,
-  },
-
-  passwordContainer: {
-    height: 54,
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 14,
-    backgroundColor: "#FFFFFF",
-  },
-
-  passwordInput: {
-    flex: 1,
-    height: "100%",
-    paddingHorizontal: 16,
-    color: "#0F172A",
-    fontSize: 15,
-  },
-
-  showButton: {
-    paddingHorizontal: 14,
-  },
-
-  showButtonText: {
-    color: "#2563EB",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-
   passwordHint: {
     color: "#94A3B8",
     fontSize: 12,
     marginTop: 7,
-  },
-
-  registerButton: {
-    height: 54,
-    borderRadius: 14,
-    backgroundColor: "#2563EB",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 4,
-  },
-
-  registerButtonPressed: {
-    opacity: 0.85,
-  },
-
-  registerButtonDisabled: {
-    opacity: 0.6,
-  },
-
-  registerButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
   },
 
   footer: {
@@ -327,7 +241,7 @@ const styles = StyleSheet.create({
   },
 
   loginText: {
-    color: "#2563EB",
+    color: colors.primary,
     fontSize: 14,
     fontWeight: "700",
   },

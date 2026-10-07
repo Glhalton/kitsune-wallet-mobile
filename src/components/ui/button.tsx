@@ -1,32 +1,56 @@
+import { colors } from "@/constants/colors";
 import {
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    TouchableOpacityProps,
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
 } from "react-native";
 
 interface ButtonProps extends TouchableOpacityProps {
-  titulo: string;
+  title: string;
+  loading?: boolean;
 }
 
-export function Button({ titulo, ...rest }: ButtonProps) {
+export function Button({
+  title,
+  loading = false,
+  disabled = false,
+  onPress,
+  style,
+  ...rest
+}: ButtonProps) {
+  const isDisabled = loading || disabled;
   return (
-    <TouchableOpacity {...rest} style={styles.box}>
-      <Text style={styles.title}>{titulo}</Text>
+    <TouchableOpacity
+      {...rest}
+      disabled={isDisabled}
+      onPress={onPress}
+      style={[
+        styles.box,
+        { backgroundColor: colors.primary, opacity: isDisabled ? 0.6 : 1 },
+        style,
+      ]}
+    >
+      {loading ? (
+        <ActivityIndicator color={colors.white} />
+      ) : (
+        <Text style={styles.buttonText}>{title}</Text>
+      )}
     </TouchableOpacity>
   );
 }
 const styles = StyleSheet.create({
   box: {
-    backgroundColor: "#f54444",
     width: 340,
-    height: 55,
-    borderRadius: 10,
+    height: 54,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
   },
-  title: {
-    color: "white",
-    fontWeight: "bold",
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
   },
 });

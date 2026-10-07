@@ -1,19 +1,25 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/Input";
+import { colors } from "@/constants/colors";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 import {
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,18 +34,16 @@ export default function LoginScreen() {
     try {
       setLoading(true);
 
-      // Aqui você poderá chamar sua API:
-      //
-      // const response = await fetch(`${API_URL}/auth/login`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     email,
-      //     password,
-      //   }),
-      // });
+      const response = await fetch(`${apiUrl}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -47,7 +51,7 @@ export default function LoginScreen() {
     } catch (error) {
       Alert.alert(
         "Erro",
-        "Não foi possível realizar o login. Tente novamente."
+        "Não foi possível realizar o login. Tente novamente.",
       );
     } finally {
       setLoading(false);
@@ -67,89 +71,73 @@ export default function LoginScreen() {
         >
           <View style={styles.header}>
             <View style={styles.logo}>
-              <Text style={styles.logoText}>K</Text>
+              <Image
+                source={require("@/assets/images/kitsune-wallet.png")}
+                style={{
+                  width: 150,
+                  height: 150,
+                }}
+              />
             </View>
-
-            <Text style={styles.title}>Bem-vindo de volta!</Text>
-
-            <Text style={styles.subtitle}>
-              Entre na sua conta para continuar.
-            </Text>
           </View>
 
           <View style={styles.form}>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>E-mail</Text>
 
-              <TextInput
-                style={styles.input}
+              <Input
                 placeholder="Digite seu e-mail"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.placeholder}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
                 editable={!loading}
+                rightIcon={
+                  <Ionicons name={"person"} size={22} color={colors.icon} />
+                }
               />
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Senha</Text>
 
-              <View style={styles.passwordContainer}>
-                <TextInput
-                  style={styles.passwordInput}
-                  placeholder="Digite sua senha"
-                  placeholderTextColor="#9CA3AF"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  editable={!loading}
-                />
-
-                <Pressable
-                  onPress={() => setShowPassword((previous) => !previous)}
-                  style={styles.showButton}
-                >
-                  <Text style={styles.showButtonText}>
-                    {showPassword ? "Ocultar" : "Mostrar"}
-                  </Text>
-                </Pressable>
-              </View>
+              <Input
+                placeholder="Digite sua senha"
+                placeholderTextColor={colors.placeholder}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                editable={!loading}
+                rightIcon={
+                  <Ionicons
+                    name={showPassword ? "eye-off" : "eye"}
+                    size={22}
+                    color={colors.icon}
+                  />
+                }
+                onRightIconPress={() =>
+                  setShowPassword((previous) => !previous)
+                }
+              />
             </View>
 
             <Pressable
               style={styles.forgotPassword}
               onPress={() => Alert.alert("Recuperação", "Em breve.")}
             >
-              <Text style={styles.forgotPasswordText}>
-                Esqueceu sua senha?
-              </Text>
+              <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
             </Pressable>
 
-            <Pressable
-              style={({ pressed }) => [
-                styles.loginButton,
-                pressed && styles.loginButtonPressed,
-                loading && styles.loginButtonDisabled,
-              ]}
-              onPress={handleLogin}
-              disabled={loading}
-            >
-              <Text style={styles.loginButtonText}>
-                {loading ? "Entrando..." : "Entrar"}
-              </Text>
-            </Pressable>
+            <Button title="Entrar" onPress={() => router.push("/documents")} />
           </View>
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Ainda não possui uma conta?</Text>
 
-            <Pressable
-              onPress={() => router.push("./register")}
-            >
+            <Pressable onPress={() => router.push("./register")}>
               <Text style={styles.registerText}> Criar conta</Text>
             </Pressable>
           </View>
@@ -171,45 +159,20 @@ const styles = StyleSheet.create({
 
   content: {
     flexGrow: 1,
-    justifyContent: "center",
     paddingHorizontal: 24,
     paddingVertical: 40,
   },
 
   header: {
     alignItems: "center",
-    marginBottom: 40,
+    marginTop: 40,
+    marginBottom: 20,
   },
 
   logo: {
-    width: 72,
-    height: 72,
-    borderRadius: 20,
-    backgroundColor: "#2563EB",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 24,
-  },
-
-  logoText: {
-    color: "#FFFFFF",
-    fontSize: 34,
-    fontWeight: "800",
-  },
-
-  title: {
-    color: "#0F172A",
-    fontSize: 28,
-    fontWeight: "800",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-
-  subtitle: {
-    color: "#64748B",
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: "center",
   },
 
   form: {
@@ -227,45 +190,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
-  input: {
-    height: 54,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 14,
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 16,
-    color: "#0F172A",
-    fontSize: 15,
-  },
-
-  passwordContainer: {
-    height: 54,
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 14,
-    backgroundColor: "#FFFFFF",
-  },
-
-  passwordInput: {
-    flex: 1,
-    height: "100%",
-    paddingHorizontal: 16,
-    color: "#0F172A",
-    fontSize: 15,
-  },
-
-  showButton: {
-    paddingHorizontal: 14,
-  },
-
-  showButtonText: {
-    color: "#2563EB",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-
   forgotPassword: {
     alignSelf: "flex-end",
     marginTop: -4,
@@ -273,31 +197,9 @@ const styles = StyleSheet.create({
   },
 
   forgotPasswordText: {
-    color: "#2563EB",
+    color: colors.primary,
     fontSize: 14,
     fontWeight: "600",
-  },
-
-  loginButton: {
-    height: 54,
-    borderRadius: 14,
-    backgroundColor: "#2563EB",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  loginButtonPressed: {
-    opacity: 0.85,
-  },
-
-  loginButtonDisabled: {
-    opacity: 0.6,
-  },
-
-  loginButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
   },
 
   footer: {
@@ -313,7 +215,7 @@ const styles = StyleSheet.create({
   },
 
   registerText: {
-    color: "#2563EB",
+    color: colors.primary,
     fontSize: 14,
     fontWeight: "700",
   },
