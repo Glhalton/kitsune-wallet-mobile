@@ -6,6 +6,7 @@ export const colors = {
   text: "#012551",
   placeholder: "#9CA3AF",
   icon: "#9CA3AF",
+  danger: "#B91C1C",
 
   white: "#ffff",
 };
