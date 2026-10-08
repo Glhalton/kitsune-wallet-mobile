@@ -1,3 +1,4 @@
+import * as SecureStore from "expo-secure-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
 import { colors } from "@/constants/colors";
@@ -26,7 +27,9 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
+    const formattedEmail = email.trim().toLowerCase();
+
+    if (!formattedEmail || !password) {
       Alert.alert("Atenção", "Preencha o e-mail e a senha.");
       return;
     }
@@ -40,14 +43,25 @@ export default function LoginScreen() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
+          email: formattedEmail,
           password,
         }),
       });
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        const data = await response.json();
+        const message = Array.isArray(data.message)
+          ? data.message.join("\n")
+          : data.message;
 
-      Alert.alert("Login", "Login realizado com sucesso!");
+        Alert.alert("Erro", message ?? "Houve um erro ao fazer login");
+        return;
+      }
+
+      const { accessToken } = await response.json();
+      await SecureStore.setItemAsync("accessToken", accessToken);
+
+      router.replace("/documents");
     } catch (error) {
       Alert.alert(
         "Erro",
@@ -131,7 +145,7 @@ export default function LoginScreen() {
               <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
             </Pressable>
 
-            <Button title="Entrar" onPress={() => router.push("/documents")} />
+            <Button title="Entrar" onPress={() => handleLogin()} />
           </View>
 
           <View style={styles.footer}>

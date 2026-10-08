@@ -7,7 +7,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { Link, router } from "expo-router";
@@ -24,8 +23,13 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
   const handleRegister = async () => {
-    if (!name.trim() || !email.trim() || !password.trim()) {
+    const formattedName = name.trim();
+    const formattedEmail = email.trim().toLowerCase();
+
+    if (!formattedName || !formattedEmail || !password) {
       Alert.alert("Atenção", "Preencha todos os campos.");
       return;
     }
@@ -41,21 +45,27 @@ export default function Register() {
     try {
       setLoading(true);
 
-      // Aqui você poderá chamar sua API:
-      //
-      // await fetch(`${API_URL}/users`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     name,
-      //     email,
-      //     password,
-      //   }),
-      // });
+      const response = await fetch(`${apiUrl}/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formattedName,
+          email: formattedEmail,
+          password,
+        }),
+      });
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        const data = await response.json();
+        const message = Array.isArray(data.message)
+          ? data.message.join("\n")
+          : data.message;
+
+        Alert.alert("Erro", message ?? "Não foi possível criar sua conta");
+        return;
+      }
 
       Alert.alert("Sucesso", "Sua conta foi criada!", [
         {
@@ -150,7 +160,7 @@ export default function Register() {
               title="Criar conta"
               disabled={loading}
               loading={loading}
-              onPress={() => router.push("/documents")}
+              onPress={() => handleRegister()}
             />
           </View>
 
@@ -190,7 +200,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 36,
   },
-
 
   title: {
     color: "#0F172A",
