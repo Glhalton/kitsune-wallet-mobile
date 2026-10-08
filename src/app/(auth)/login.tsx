@@ -145,7 +145,12 @@ export default function LoginScreen() {
               <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
             </Pressable>
 
-            <Button title="Entrar" onPress={() => handleLogin()} />
+            <Button
+              disabled={loading}
+              loading={loading}
+              title="Entrar"
+              onPress={() => handleLogin()}
+            />
           </View>
 
           <View style={styles.footer}>

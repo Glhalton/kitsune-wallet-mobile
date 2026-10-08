@@ -1,4 +1,6 @@
+import * as SecureStore from "expo-secure-store";
 import { Button } from "@/components/ui/button";
+import { DateInput } from "@/components/ui/DateInput";
 import { Input } from "@/components/ui/Input";
 import { colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,26 +18,69 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function EditProfile() {
-  const params = useLocalSearchParams<{ name?: string; email?: string }>();
-  const [name, setName] = useState(params.name ?? "");
-  const [email, setEmail] = useState(params.email ?? "");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+export default function RgForm() {
+  const [issuingAuthority, setIssuingAuthority] = useState<string>();
+  const [cpf, setCpf] = useState<string>();
+  const [registerNumber, setRegisterNumber] = useState<string>();
+  const [militaryCertification, setMilitaryCertification] = useState<string>();
+  const [issueDate, setIssueDate] = useState<Date>();
+  const [uf, setUf] = useState<string>();
   const [loading, setLoading] = useState(false);
 
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
   const handleSave = async () => {
-    if (!name.trim() || !email.trim()) {
-      Alert.alert("Atenção", "Preencha o nome e o e-mail.");
+    if (
+      !cpf ||
+      !issueDate ||
+      !issuingAuthority ||
+      !registerNumber ||
+      !militaryCertification ||
+      !uf
+    ) {
+      Alert.alert("Atenção", "Preencha todos os campos obrigatórios");
       return;
     }
 
     try {
       setLoading(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const accessToken = await SecureStore.getItemAsync("accessToken");
 
-      Alert.alert("Perfil", "Dados atualizados com sucesso!");
+      const response = await fetch(`${apiUrl}/rg`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          issuingAuthority,
+          registerNumber,
+          cpf,
+          militaryCertification,
+          uf: uf.toUpperCase(),
+          issueDate: issueDate.toISOString(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const message = Array.isArray(data.message)
+          ? data.message.join("\n")
+          : data.message;
+
+        Alert.alert("Erro", message ?? "Não foi possível cadastrar o RG.");
+
+        return;
+      }
+
+      Alert.alert("Sucesso", "RG cadastrado com sucesso!", [
+        {
+          text: "OK",
+          onPress: () => router.back(),
+        },
+      ]);
     } catch (error) {
       Alert.alert(
         "Erro",
@@ -62,104 +107,88 @@ export default function EditProfile() {
               <Ionicons name="chevron-back" size={26} color={colors.text} />
             </Pressable>
 
-            <Text style={styles.title}>Editar perfil</Text>
+            <Text style={styles.title}>Registrar RG</Text>
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nome</Text>
+            <Text style={styles.label}>Número do RG</Text>
 
             <Input
-              placeholder="Digite seu nome"
+              placeholder="12345678"
               placeholderTextColor={colors.placeholder}
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="words"
+              value={registerNumber}
+              onChangeText={setRegisterNumber}
+              autoCapitalize="none"
+              keyboardType="numeric"
               editable={!loading}
-              rightIcon={
-                <Ionicons name="person" size={22} color={colors.icon} />
-              }
             />
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>E-mail</Text>
+            <Text style={styles.label}>Autoridade emissora</Text>
 
             <Input
-              placeholder="Digite seu e-mail"
+              placeholder="PC"
               placeholderTextColor={colors.placeholder}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
+              value={issuingAuthority}
+              onChangeText={setIssuingAuthority}
               autoCapitalize="none"
               autoCorrect={false}
               editable={!loading}
-              rightIcon={<Ionicons name="mail" size={22} color={colors.icon} />}
             />
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Senha atual</Text>
+            <Text style={styles.label}>CPF</Text>
 
             <Input
-              placeholder="Digite sua senha"
+              placeholder="1234567890"
               placeholderTextColor={colors.placeholder}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
+              value={cpf}
+              onChangeText={setCpf}
+              keyboardType="numeric"
               autoCapitalize="none"
+              autoCorrect={false}
               editable={!loading}
-              rightIcon={
-                <Ionicons
-                  name={showPassword ? "eye-off" : "eye"}
-                  size={22}
-                  color={colors.icon}
-                />
-              }
-              onRightIconPress={() => setShowPassword((previous) => !previous)}
             />
           </View>
 
-                    <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nova senha</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Certificado militar</Text>
 
             <Input
-              placeholder="Digite a nova senha"
+              placeholder="11223344556677"
               placeholderTextColor={colors.placeholder}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
+              value={militaryCertification}
+              onChangeText={setMilitaryCertification}
+              keyboardType="numeric"
               autoCapitalize="none"
+              autoCorrect={false}
               editable={!loading}
-              rightIcon={
-                <Ionicons
-                  name={showPassword ? "eye-off" : "eye"}
-                  size={22}
-                  color={colors.icon}
-                />
-              }
-              onRightIconPress={() => setShowPassword((previous) => !previous)}
             />
           </View>
 
-                    <View style={styles.inputGroup}>
-            <Text style={styles.label}>Confirme a nova senha</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Estado de emissão</Text>
 
             <Input
-              placeholder="Confirme a nova senha"
+              placeholder="PA"
               placeholderTextColor={colors.placeholder}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
+              value={uf}
+              onChangeText={setUf}
               autoCapitalize="none"
+              autoCorrect={false}
               editable={!loading}
-              rightIcon={
-                <Ionicons
-                  name={showPassword ? "eye-off" : "eye"}
-                  size={22}
-                  color={colors.icon}
-                />
-              }
-              onRightIconPress={() => setShowPassword((previous) => !previous)}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Data de emissão</Text>
+
+            <DateInput
+              value={issueDate}
+              onChange={setIssueDate}
+              placeholder="01/01/2026"
             />
           </View>
 
