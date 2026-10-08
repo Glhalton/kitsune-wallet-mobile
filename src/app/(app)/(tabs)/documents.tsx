@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Pressable,
   RefreshControl,
   StyleSheet,
   Text,
@@ -78,25 +79,27 @@ export default function Documents() {
     Alert.alert("Erro", "Não foi possível carregar os tipos de documento.");
   }, []);
 
-  const handleSelectType = async (documentType: DocumentType) => {
-    try {
-      setSavingTypeId(documentType.id);
+  const handleSelectType = (documentType: DocumentType) => {
+    setPickerOpen(false);
 
-      const createdDocument = await createDocument(documentType.id);
+    switch (documentType.name.toLowerCase()) {
+      case "rg":
+        router.push("/rg-form");
+        break;
 
-      setDocuments((previous) => [...previous, createdDocument]);
-      setStatus("ready");
-      setPickerOpen(false);
-    } catch (error) {
-      if (error instanceof UnauthorizedError) {
-        setPickerOpen(false);
-        await handleUnauthorized();
-        return;
-      }
+      case "título de eleitor":
+        router.push("/electoral-card-form");
+        break;
 
-      Alert.alert("Erro", "Não foi possível adicionar o documento.");
-    } finally {
-      setSavingTypeId(null);
+      case "cnh":
+        router.push("/cnh-form");
+        break;
+
+      default:
+        Alert.alert(
+          "Tipo não suportado",
+          `Ainda não existe um formulário para ${documentType.name}.`,
+        );
     }
   };
 
@@ -125,9 +128,51 @@ export default function Documents() {
             />
           }
           renderItem={({ item }) => (
-            <View style={styles.card}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.card,
+                pressed && styles.cardPressed,
+              ]}
+              onPress={() => {
+                switch (item.documentType.name.toLowerCase()) {
+                  case "rg":
+                    router.push({
+                      pathname: "/rg-data",
+                      params: {
+                        documentId: String(item.id),
+                      },
+                    });
+                    break;
+
+                  case "cnh":
+                    router.push({
+                      pathname: "/cnh-data",
+                      params: {
+                        documentId: String(item.id),
+                      },
+                    });
+                    break;
+
+                  case "título de eleitor":
+                    router.push({
+                      pathname: "/electoral-card-data",
+                      params: {
+                        documentId: String(item.id),
+                      },
+                    });
+                    break;
+
+                  default:
+                    Alert.alert(
+                      "Documento",
+                      `Não existe uma tela para ${item.documentType.name}.`,
+                    );
+                }
+              }}
+            >
               <View style={styles.cardHeader}>
                 <Text style={styles.cardLabel}>{item.documentType.name}</Text>
+
                 <Ionicons name="card-outline" size={26} color={colors.white} />
               </View>
 
@@ -139,7 +184,7 @@ export default function Documents() {
                 Adicionado em{" "}
                 {new Date(item.createdAt).toLocaleDateString("pt-BR")}
               </Text>
-            </View>
+            </Pressable>
           )}
           ListEmptyComponent={
             status === "error" ? (
@@ -280,5 +325,8 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontSize: 14,
     fontWeight: "700",
+  },
+  cardPressed: {
+    opacity: 0.85,
   },
 });

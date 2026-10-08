@@ -16,12 +16,10 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function EditProfile() {
+export default function ElectoralCardForm() {
   const params = useLocalSearchParams<{ name?: string; email?: string }>();
   const [name, setName] = useState(params.name ?? "");
   const [email, setEmail] = useState(params.email ?? "");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
@@ -66,7 +64,7 @@ export default function EditProfile() {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nome</Text>
+            <Text style={styles.label}>Número do Título</Text>
 
             <Input
               placeholder="Digite seu nome"
@@ -82,7 +80,7 @@ export default function EditProfile() {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>E-mail</Text>
+            <Text style={styles.label}>Zona</Text>
 
             <Input
               placeholder="Digite seu e-mail"
@@ -98,68 +96,50 @@ export default function EditProfile() {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Senha atual</Text>
+            <Text style={styles.label}>Seção</Text>
 
             <Input
-              placeholder="Digite sua senha"
+              placeholder="Digite seu e-mail"
               placeholderTextColor={colors.placeholder}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
               autoCapitalize="none"
+              autoCorrect={false}
               editable={!loading}
-              rightIcon={
-                <Ionicons
-                  name={showPassword ? "eye-off" : "eye"}
-                  size={22}
-                  color={colors.icon}
-                />
-              }
-              onRightIconPress={() => setShowPassword((previous) => !previous)}
+              rightIcon={<Ionicons name="mail" size={22} color={colors.icon} />}
             />
           </View>
 
-                    <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nova senha</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Cidade eleitoral</Text>
 
             <Input
-              placeholder="Digite a nova senha"
+              placeholder="Digite seu e-mail"
               placeholderTextColor={colors.placeholder}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
               autoCapitalize="none"
+              autoCorrect={false}
               editable={!loading}
-              rightIcon={
-                <Ionicons
-                  name={showPassword ? "eye-off" : "eye"}
-                  size={22}
-                  color={colors.icon}
-                />
-              }
-              onRightIconPress={() => setShowPassword((previous) => !previous)}
+              rightIcon={<Ionicons name="mail" size={22} color={colors.icon} />}
             />
           </View>
 
-                    <View style={styles.inputGroup}>
-            <Text style={styles.label}>Confirme a nova senha</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Estado Eleitoral</Text>
 
             <Input
-              placeholder="Confirme a nova senha"
+              placeholder="Digite seu e-mail"
               placeholderTextColor={colors.placeholder}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
               autoCapitalize="none"
+              autoCorrect={false}
               editable={!loading}
-              rightIcon={
-                <Ionicons
-                  name={showPassword ? "eye-off" : "eye"}
-                  size={22}
-                  color={colors.icon}
-                />
-              }
-              onRightIconPress={() => setShowPassword((previous) => !previous)}
+              rightIcon={<Ionicons name="mail" size={22} color={colors.icon} />}
             />
           </View>
 
